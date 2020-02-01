@@ -20,7 +20,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       },
-      ticket_available: {
+      hours: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
+      capacity: {
         allowNull: false,
         type: Sequelize.INTEGER
       },

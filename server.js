@@ -61,12 +61,13 @@ app.get("/api/v1/representations", async (req, res) => {
 
 // CREATE REPRESENATIONS
 app.post("/api/v1/representations", async (req, res) => {
-  const { city, ticket_price, date, ticket_available, ticket_sold } = req.body;
+  const { city, ticket_price, date, hours, capacity, ticket_sold } = req.body;
   const representation = await Representation.create({
     city,
     ticket_price,
     date,
-    ticket_available,
+    hours,
+    capacity,
     ticket_sold
   });
   res.status(200).send({ representation });
@@ -82,13 +83,13 @@ app.delete("/api/v1/representations/:id", async (req, res) => {
 // UPDATE REPRESENATIONS
 app.put("/api/v1/representations/:id", async (req, res) => {
   const { id } = req.params;
-  const { city, ticket_price, date, ticket_available, ticket_sold } = req.body;
+  const { city, ticket_price, date, hours, capacity, ticket_sold } = req.body;
   await Representation.update(
-    { city, ticket_price, date, ticket_available, ticket_sold },
+    { city, ticket_price, date, hours, capacity, ticket_sold },
     { where: { id } }
   );
-  const updateArtiste = await Representation.findOne({ where: { id } });
-  res.status(200).send(updateArtiste);
+  const updateRepresentation = await Representation.findOne({ where: { id } });
+  res.status(200).send(updateRepresentation);
 });
 
 // LISTEN PORT

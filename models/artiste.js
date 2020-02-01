@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     author: DataTypes.STRING,
     country: DataTypes.STRING,
-    description: DataTypes.STRING,
+    description: DataTypes.TEXT,
     picture: DataTypes.STRING
   }, {});
   Artiste.associate = function(models) {
