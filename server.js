@@ -1,15 +1,17 @@
 const express = require("express");
 const app = express();
+const cors = require('cors');
 
-const { Artiste } = require("./models");
+const { Artiste, Representation } = require("./models");
 const port = 5000;
 
+app.use(express.json());
+app.use(cors());
 app.use(
   express.urlencoded({
     extended: true
   })
 );
-app.use(express.json());
 
 // GET ALL ARTISTES
 app.get("/api/v1/artistes", async (req, res) => {
@@ -46,6 +48,46 @@ app.put("/api/v1/artistes/:id", async (req, res) => {
     { where: { id } }
   );
   const updateArtiste = await Artiste.findOne({ where: { id } });
+  res.status(200).send(updateArtiste);
+});
+
+//////////////////////////
+
+// GET ALL REPRESENTATIONS
+app.get("/api/v1/representations", async (req, res) => {
+  const allRepresentations = await Representation.findAll();
+  res.status(200).send(allRepresentations);
+});
+
+// CREATE REPRESENATIONS
+app.post("/api/v1/representations", async (req, res) => {
+  const { city, ticket_price, date, ticket_available, ticket_sold } = req.body;
+  const representation = await Representation.create({
+    city,
+    ticket_price,
+    date,
+    ticket_available,
+    ticket_sold
+  });
+  res.status(200).send({ representation });
+});
+
+// DELETE REPRESENATIONS
+app.delete("/api/v1/representations/:id", async (req, res) => {
+  const { id } = req.params;
+  await Representation.destroy({ where: { id } });
+  res.status(200).send(id);
+});
+
+// UPDATE REPRESENATIONS
+app.put("/api/v1/representations/:id", async (req, res) => {
+  const { id } = req.params;
+  const { city, ticket_price, date, ticket_available, ticket_sold } = req.body;
+  await Representation.update(
+    { city, ticket_price, date, ticket_available, ticket_sold },
+    { where: { id } }
+  );
+  const updateArtiste = await Representation.findOne({ where: { id } });
   res.status(200).send(updateArtiste);
 });
 
