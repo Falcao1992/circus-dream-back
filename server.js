@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require('cors');
 
-const { Artiste, Representation } = require("./models");
+const { Artiste, Representation, Reservation } = require("./models");
 const port = 5000;
 
 app.use(express.json());
@@ -51,12 +51,22 @@ app.put("/api/v1/artistes/:id", async (req, res) => {
   res.status(200).send(updateArtiste);
 });
 
-//////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 // GET ALL REPRESENTATIONS
 app.get("/api/v1/representations", async (req, res) => {
   const allRepresentations = await Representation.findAll();
   res.status(200).send(allRepresentations);
+});
+
+// GET REPRESENTATIONS BY CITY
+app.get("/api/v1/representations/:city", async (req, res) => {
+  const {city} = req.params;
+
+  const representationsByCity = await Representation.findAll(
+    { where: { city } }
+  );
+  res.status(200).send(representationsByCity);
 });
 
 // CREATE REPRESENATIONS
@@ -81,15 +91,56 @@ app.delete("/api/v1/representations/:id", async (req, res) => {
 });
 
 // UPDATE REPRESENATIONS
-app.put("/api/v1/representations/:id", async (req, res) => {
-  const { id } = req.params;
-  const { city, ticket_price, date, hours, capacity, ticket_sold } = req.body;
+app.put("/api/v1/representations/:city", async (req, res) => {
+  const { city } = req.params;
+  const { ticket_price, date, hours, capacity, ticket_sold } = req.body;
   await Representation.update(
-    { city, ticket_price, date, hours, capacity, ticket_sold },
+    { ticket_price, date, hours, capacity, ticket_sold },
+    { where: { city} }
+  );
+  const updateRepresentation = await Representation.findOne({ where: { city } });
+  res.status(200).send(updateRepresentation);
+});
+
+//////////////////////////////////////////////////////////////////////////////////:
+
+// GET ALL RESERVATIONS
+app.get("/api/v1/reservations", async (req, res) => {
+  const allReservations = await Reservation.findAll();
+  res.status(200).send(allReservations);
+});
+
+// CREATE RESERVATIONS
+app.post("/api/v1/reservations", async (req, res) => {
+  const { name, number_ticket, email, phone_number, city, date } = req.body;
+  const reservation = await Reservation.create({
+    name,
+    number_ticket,
+    email,
+    phone_number,
+    city,
+    date
+  });
+  res.status(200).send({ reservation });
+});
+
+// DELETE RESERVATION
+app.delete("/api/v1/reservations/:id", async (req, res) => {
+  const { id } = req.params;
+  await Reservation.destroy({ where: { id } });
+  res.status(200).send(id);
+});
+
+// UPDATE RESERVATION
+app.put("/api/v1/reservations/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, number_ticket, email, phone_number, city, date} = req.body;
+  await Reservation.update(
+    { name, number_ticket, email, phone_number, city, date },
     { where: { id } }
   );
-  const updateRepresentation = await Representation.findOne({ where: { id } });
-  res.status(200).send(updateRepresentation);
+  const updateReservation = await Reservation.findOne({ where: { id } });
+  res.status(200).send(updateReservation);
 });
 
 // LISTEN PORT
